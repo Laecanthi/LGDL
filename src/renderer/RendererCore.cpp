@@ -12,21 +12,20 @@ namespace LGDL
     void Renderer::Initialize()
     {
         rectBatch.mesh = UploadMesh(CreateRectangleMesh()); // creates the rectangle mesh
+        triBatch.mesh = UploadMesh(CreateTriangleMesh()); // creates the triangle mesh
 
         int MAX_INSTANCES = 5000; // arbitrary max instances being 5k.
 
         // create VBO
-
         glGenBuffers(1, &instanceVBO);
         glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(InstanceData) * MAX_INSTANCES, nullptr, GL_DYNAMIC_DRAW);
 
         // setup attributes
-
         AttributeSetup(rectBatch);
+        AttributeSetup(triBatch);
 
         // create shader program
-
         shaderProgram = CreateShaderProgram(
             "shaders/PrimitiveWorld.vert",
             "shaders/Primitive.frag"
@@ -56,9 +55,11 @@ namespace LGDL
 
         // draw batches
         DrawBatch(rectBatch);
+        DrawBatch(triBatch);
 
         //clear batches
         rectBatch.instances.clear();
+        triBatch.instances.clear();
     }
 
     void Renderer::AttributeSetup(const Batch& batch)

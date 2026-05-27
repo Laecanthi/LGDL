@@ -8,4 +8,6 @@
 namespace LGDL
 {
     std::vector<Vertex> CreateRectangleMesh();
+
+    std::vector<Vertex> CreateTriangleMesh();
 }

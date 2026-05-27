@@ -103,4 +103,14 @@ namespace LGDL
 
         return r;
     }
+
+    float VMag(const Vec2& v)
+    {
+        return hypot(v.x, v.y);
+    }
+
+    float VDir(const Vec2& v)
+    {
+        return atan2(v.y, v.x);
+    }
 }
