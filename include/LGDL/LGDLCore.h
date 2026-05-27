@@ -8,4 +8,8 @@ namespace LGDL
     std::string GetResourcePath();
 
     std::string ResolvePath(const std::string& relativePath);
+
+    bool Initialize(void* procAddressLoader);
+
+    void SetViewport(int width, int height);
 }
