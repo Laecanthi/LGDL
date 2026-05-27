@@ -21,9 +21,9 @@ namespace LGDL
         return g_ResourcePath + "/" + relativePath;
     }
 
-    bool Initialize(GLADloadproc proc)
+    bool Initialize(void* procLoader)
     {
-        return gladLoadGLLoader(proc);
+        return gladLoadGLLoader((GLADloadproc)procLoader);
     }
 
     void SetViewport(int width, int height)
