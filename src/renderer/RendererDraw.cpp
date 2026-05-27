@@ -39,7 +39,7 @@ namespace LGDL
     {
         Vec2 end = position + vector;
 
-        std::cout << end.x << "," << end.y << "\n";
+        //std::cout << end.x << "," << end.y << "\n";
 
         float mag = VMag(vector);
         
@@ -50,7 +50,7 @@ namespace LGDL
 
         Vec2 lineStop = (position * (1 - ratio)) + (end * ratio);
 
-        std::cout << lineStop.x << "," << lineStop.y << "\n";
+        //std::cout << lineStop.x << "," << lineStop.y << "\n";
 
         DrawLine(position, lineStop, thickness, color);
 
