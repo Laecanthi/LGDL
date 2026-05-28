@@ -275,7 +275,7 @@ namespace LGDL
             RenderTarget& target = pair.second;
 
             // sort commands by layer
-            std::sort(
+            std::stable_sort(
                 target.commands.begin(),
                 target.commands.end(),
                 [](const DrawCommand& a, const DrawCommand& b)
