@@ -11,11 +11,13 @@ namespace LGDL
     //constants
 
     constexpr float PI = 3.1415926f;
+    constexpr float tPI = 6.2831852;
 
     // float
 
     float min(float a, float b);
     float max(float a, float b);
+    float mod(float a, float b);
 
     // Mat3
 

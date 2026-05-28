@@ -79,6 +79,15 @@ namespace LGDL
         DrawMesh(circle);
     }
 
+    void Renderer::DrawArc(int res, float startAngle, float endAngle, const Transform& transform, const Color& color)
+    {
+        VertexMesh arc = PrimitiveArc(res, startAngle, endAngle);
+
+        SetupPrimitive(arc, transform, color);
+
+        DrawMesh(arc);
+    }
+
 
     /*
 

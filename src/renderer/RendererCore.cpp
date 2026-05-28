@@ -62,6 +62,14 @@ namespace LGDL
 
     void Renderer::BeginFrame(const Camera& cam, const Screen& screen)
     {
+        glClearColor(
+            0.1f,
+            0.2f,
+            0.3f,
+            1.0f
+        );
+
+        glClear(GL_COLOR_BUFFER_BIT);
 
         // SET PRIMITIVE WORLD ATTRIBUTES
 
@@ -102,14 +110,19 @@ namespace LGDL
 
         for(int target : renderOrder)
         {
-            RenderTarget t = renderTargets[target];
+            RenderTarget& t = renderTargets[target];
 
             glUseProgram(t.shaderProgram); // set shader per target
 
             DrawGeometryBatch(t.geometryBatch); // draw target's batch
 
             t.geometryBatch.vertices.clear(); // clear batch data
+            t.commands.clear(); // clear commands
+
+            //std::cout << t.commands.size() << ", " << t.geometryBatch.vertices.size() << "\n";
         }
+
+        //std::cout << renderTargets.size() << "\n";
 
         //clear batches
         //worldBatch.vertices.clear();
@@ -250,7 +263,7 @@ namespace LGDL
     void Renderer::DrawGeometryBatch(const GeometryBatch& batch) // IMPORTANT: THIS ASSUMES SHADER PROGRAM IS ALREADY SET
     {
         glBindVertexArray(batch.VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, batch.VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, batch.VBO);
 
         glBufferData(
             GL_ARRAY_BUFFER,
@@ -260,6 +273,8 @@ namespace LGDL
         );
 
         glDrawArrays(GL_TRIANGLES, 0, batch.vertices.size());
+
+        //std::cout << batch.vertices.size() << "\n";
     }
 
     void Renderer::SetState(int target, int layer)
@@ -285,8 +300,8 @@ namespace LGDL
             );
 
             // clear geometry buffer
-            target.geometryBatch.vertices.clear();
-
+            //target.geometryBatch.vertices.clear();
+            //already clearned in flush(), doesn't need to ble cleared twice
 
             // pre-calculate total vertex count
             size_t totalVertices = 0;

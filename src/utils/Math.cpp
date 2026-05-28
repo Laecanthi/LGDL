@@ -1,5 +1,7 @@
 #include <LGDL/Math.h>
 
+#include <iostream>
+
 namespace LGDL
 {
 
@@ -15,6 +17,17 @@ namespace LGDL
     {
         if(a > b) return a;
         return b;
+    }
+
+    float mod(float a, float b) // this is the best modulo that I could think of
+    {
+        float v = a / b;
+        int f = floor(v);
+        float r = v - f;
+
+        //std::cout << r*b << "\n";
+
+        return r * b;
     }
 
 
