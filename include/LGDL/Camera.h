@@ -11,4 +11,9 @@ namespace LGDL
 
         float aspectRatio;
     };
+
+    struct Screen
+    {
+        Vec2 dimensions;
+    };
 }

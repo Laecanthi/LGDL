@@ -10,19 +10,22 @@ namespace LGDL
 {
     void Renderer::DrawMesh(const VertexMesh& mesh)
     {
-        geometryBatch.vertices.insert(
-            geometryBatch.vertices.end(),
-            mesh.vertices.begin(),
-            mesh.vertices.end()
-        );
+        DrawCommand cmd;
+
+        cmd.mesh = mesh;
+        cmd.layer = drawState.layer;
+
+        renderTargets[drawState.target]
+            .commands
+            .push_back(cmd);
     }
 
-    void Renderer::PushTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3) // be aware that this does NOT give any information to the frag shader
+    /*void Renderer::PushTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3) // be aware that this does NOT give any information to the frag shader
     {
         geometryBatch.vertices.push_back(Vertex(v1));
         geometryBatch.vertices.push_back(Vertex(v2));
         geometryBatch.vertices.push_back(Vertex(v3));
-    }
+    }*/
 
     void Renderer::DrawRect(const Transform& transform, const Color& color)
     {
@@ -31,6 +34,29 @@ namespace LGDL
         std::vector<Vec2> uv = CalculateUVs(rect);
 
         ApplyFragData(rect, color, uv);
+
+        ApplyTransform(rect, transform);
+
+        DrawMesh(rect);
+    }
+
+    void Renderer::DrawRect(const Vec2& pos, const Vec2& size, const Color& color) // draws rect from bottom left corner rather than center
+    {
+        VertexMesh rect = PrimitiveRect();
+        
+        std::vector<Vec2> uv = CalculateUVs(rect);
+
+        ApplyFragData(rect, color, uv);
+
+        Transform transform;
+
+        transform.scale = size;
+
+        Vec2 end = pos + size;
+
+        transform.position = (pos + end) * 0.5;
+
+        transform.rotation = 0;
 
         ApplyTransform(rect, transform);
 

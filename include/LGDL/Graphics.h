@@ -62,4 +62,10 @@ namespace LGDL
         GLuint VAO;
         GLuint VBO;
     };
+
+    struct DrawCommand
+    {
+        VertexMesh mesh;
+        int layer;
+    };
 }
