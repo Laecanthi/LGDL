@@ -12,6 +12,11 @@ namespace LGDL
 
     constexpr float PI = 3.1415926f;
 
+    // float
+
+    float min(float a, float b);
+    float max(float a, float b);
+
     // Mat3
 
     Mat3 Identity();
@@ -27,10 +32,12 @@ namespace LGDL
     // Vec2
 
     Vec2 operator+(const Vec2& a, const Vec2& b);
+    Vec2& operator+=(Vec2& a, const Vec2& b);
 
     Vec2 operator-(const Vec2& a, const Vec2& b);
 
     Vec2 operator*(const Vec2& v, float s);
+    Vec2 operator*(const Vec2& a, const Vec2& b);
 
     float VMag(const Vec2& v);
 

@@ -8,6 +8,51 @@
 
 namespace LGDL
 {
+    void Renderer::DrawMesh(const VertexMesh& mesh)
+    {
+        geometryBatch.vertices.insert(
+            geometryBatch.vertices.end(),
+            mesh.vertices.begin(),
+            mesh.vertices.end()
+        );
+    }
+
+    void Renderer::PushTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3)
+    {
+        geometryBatch.vertices.push_back(Vertex(v1));
+        geometryBatch.vertices.push_back(Vertex(v2));
+        geometryBatch.vertices.push_back(Vertex(v3));
+    }
+
+    void Renderer::DrawRect(const Transform& transform, const Color& color)
+    {
+        VertexMesh rect = PrimitiveRect();
+        
+        std::vector<Vec2> uv = CalculateUVs(rect);
+
+        ApplyFragData(rect, color, uv);
+
+        ApplyTransform(rect, transform);
+
+        DrawMesh(rect);
+    }
+
+    void Renderer::DrawTriangle(const Transform& transform, const Color& color)
+    {
+        VertexMesh triangle = PrimitiveTriangle();
+
+        std::vector<Vec2> uv = CalculateUVs(triangle);
+
+        ApplyFragData(triangle, color, uv);
+
+        ApplyTransform(triangle, transform);
+
+        DrawMesh(triangle);
+    }
+
+
+    /*
+
     void Renderer::DrawRect(const Transform& transform, const Color& color)
     {
         rectBatch.instances.push_back({transform, color});
@@ -17,6 +62,8 @@ namespace LGDL
     {
         triBatch.instances.push_back({transform, color});
     }
+
+    */
 
     void Renderer::DrawLine(const Vec2& start, const Vec2& end, const float& thickness, const Color& color)
     {
@@ -32,7 +79,7 @@ namespace LGDL
 
         transform.rotation = VDir(delta);
 
-        rectBatch.instances.push_back({transform, color});
+        DrawRect(transform, color);
     }
 
     void Renderer::DrawVector(const Vec2& position, const Vec2& vector, const float& thickness, const Color& color)
@@ -62,5 +109,4 @@ namespace LGDL
 
         DrawTriangle(transform, color);
     }
-
 }

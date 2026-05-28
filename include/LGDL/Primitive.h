@@ -7,7 +7,9 @@
 
 namespace LGDL
 {
-    std::vector<Vertex> CreateRectangleMesh();
+    VertexMesh PrimitiveRect();
 
-    std::vector<Vertex> CreateTriangleMesh();
+    VertexMesh PrimitiveTriangle();
+
+    VertexMesh CreateTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3);
 }

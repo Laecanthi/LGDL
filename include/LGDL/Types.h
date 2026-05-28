@@ -25,11 +25,6 @@ namespace LGDL
         float a;
     };
 
-    struct Vertex
-    {
-        Vec2 pos;
-    };
-
     struct Transform
     {
         Vec2 position;

@@ -2,7 +2,7 @@
 
 namespace LGDL
 {
-    std::vector<Vertex> CreateRectangleMesh()
+    /*std::vector<Vertex> CreateRectangleMesh()
     {
         std::vector<Vertex> v;
 
@@ -28,6 +28,31 @@ namespace LGDL
         v.push_back({-1, -0.5});
 
         return v;
+    }*/
+
+    VertexMesh PrimitiveRect()
+    {
+        return JoinMesh(
+                CreateTriangle({-0.5f, -0.5f}, {0.5f, -0.5f}, {0.5f, 0.5f}),
+                CreateTriangle({-0.5f, -0.5f},{0.5f, 0.5f}, {-0.5f, 0.5f})
+            );
+    }
+
+    VertexMesh PrimitiveTriangle()
+    {
+        return CreateTriangle({0,0}, {-1, 0.5}, {-1, -0.5});
+    }
+
+
+    VertexMesh CreateTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3)
+    {
+        VertexMesh mesh;
+
+        mesh.vertices.push_back(Vertex(v1));
+        mesh.vertices.push_back(Vertex(v2));
+        mesh.vertices.push_back(Vertex(v3));
+
+        return mesh;
     }
 }
 

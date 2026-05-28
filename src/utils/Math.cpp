@@ -3,6 +3,21 @@
 namespace LGDL
 {
 
+    // float
+
+    float min(float a, float b)
+    {
+        if(a < b) return a;
+        return b;
+    }
+
+    float max(float a, float b)
+    {
+        if(a > b) return a;
+        return b;
+    }
+
+
     // Mat3
 
     Mat3 Identity()
@@ -84,6 +99,14 @@ namespace LGDL
         return r;
     }
 
+    Vec2& operator+=(Vec2& a, const Vec2& b)
+    {
+        a.x += b.x;
+        a.y += b.y;
+
+        return a;
+    }
+
     Vec2 operator-(const Vec2& a, const Vec2& b)
     {
         Vec2 r;
@@ -100,6 +123,16 @@ namespace LGDL
 
         r.x = v.x * s;
         r.y = v.y * s;
+
+        return r;
+    }
+
+    Vec2 operator*(const Vec2& a, const Vec2& b)
+    {
+        Vec2 r;
+
+        r.x = a.x * b.x;
+        r.y = a.y * b.y;
 
         return r;
     }

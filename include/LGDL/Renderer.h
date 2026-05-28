@@ -15,13 +15,18 @@ namespace LGDL
         // CORE
 
         void Initialize();
-        void AttributeSetup(const Batch& batch);
+        void InstancedAttributeSetup(const InstanceBatch& batch);
+        void AttributeSetup(const GeometryBatch& batch);
         void BeginFrame(const Camera& cam);
         void Flush();
-        void DrawBatch(const Batch& batch);
+        void DrawInstanceBatch(const InstanceBatch& batch);
+        void DrawGeometryBatch(const GeometryBatch& batch);
 
         // DRAW
 
+        void DrawMesh(const VertexMesh& mesh);
+
+        void PushTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3);
         void DrawRect(const Transform& transform, const Color& color);
         void DrawTriangle(const Transform& transform, const Color& color);
         void DrawLine(const Vec2& start, const Vec2& end, const float& thickness, const Color& color);
@@ -34,7 +39,9 @@ namespace LGDL
 
         // batches
 
-        Batch rectBatch;
-        Batch triBatch;
+        InstanceBatch rectBatch;
+        InstanceBatch triBatch;
+
+        GeometryBatch geometryBatch;
     };
 }
