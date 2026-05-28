@@ -17,7 +17,7 @@ namespace LGDL
         );
     }
 
-    void Renderer::PushTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3)
+    void Renderer::PushTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3) // be aware that this does NOT give any information to the frag shader
     {
         geometryBatch.vertices.push_back(Vertex(v1));
         geometryBatch.vertices.push_back(Vertex(v2));
@@ -48,6 +48,19 @@ namespace LGDL
         ApplyTransform(triangle, transform);
 
         DrawMesh(triangle);
+    }
+
+    void Renderer::DrawCircle(int res, const Transform& transform, const Color& color)
+    {
+        VertexMesh circle = PrimitiveCircle(res);
+
+        std::vector<Vec2> uv = CalculateUVs(circle);
+
+        ApplyFragData(circle, color, uv);
+
+        ApplyTransform(circle, transform);
+
+        DrawMesh(circle);
     }
 
 

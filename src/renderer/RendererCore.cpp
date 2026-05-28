@@ -14,6 +14,10 @@ namespace LGDL
         //rectBatch.mesh = UploadMesh(CreateRectangleMesh()); // creates the rectangle mesh
         //triBatch.mesh = UploadMesh(CreateTriangleMesh()); // creates the triangle mesh
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_MULTISAMPLE);
+
         int MAX_INSTANCES = 5000; // arbitrary max instances being 5k.
         int MAX_VERTICES = 50000; // arbitraryt max vertices being 50k.
 
