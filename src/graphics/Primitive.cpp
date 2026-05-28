@@ -15,6 +15,26 @@ namespace LGDL
         return CreateTriangle({0,0}, {-1, 0.5}, {-1, -0.5});
     }
 
+    VertexMesh PrimitiveArc(int res, float startAngle, float endAngle)
+    {
+        VertexMesh arc;
+
+        arc.vertices.reserve(res * 3);
+
+
+        float angle = (endAngle - startAngle) / res;
+
+        for(int i = 0; i < res; i++)
+        {
+            AppendMesh(
+                arc,
+                CreateTriangle({0,0}, {cos(angle * i + startAngle), sin(angle * i + startAngle)}, {cos(angle * (i+1) + startAngle), sin(angle * (i+1) + startAngle)})
+            );
+        }
+
+        return arc;
+    }
+
     VertexMesh PrimitiveCircle(int res)
     {
         VertexMesh circle;

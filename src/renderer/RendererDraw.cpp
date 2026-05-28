@@ -31,11 +31,7 @@ namespace LGDL
     {
         VertexMesh rect = PrimitiveRect();
         
-        std::vector<Vec2> uv = CalculateUVs(rect);
-
-        ApplyFragData(rect, color, uv);
-
-        ApplyTransform(rect, transform);
+        SetupPrimitive(rect, transform, color);
 
         DrawMesh(rect);
     }
@@ -43,10 +39,6 @@ namespace LGDL
     void Renderer::DrawRect(const Vec2& pos, const Vec2& size, const Color& color) // draws rect from bottom left corner rather than center
     {
         VertexMesh rect = PrimitiveRect();
-        
-        std::vector<Vec2> uv = CalculateUVs(rect);
-
-        ApplyFragData(rect, color, uv);
 
         Transform transform;
 
@@ -58,7 +50,7 @@ namespace LGDL
 
         transform.rotation = 0;
 
-        ApplyTransform(rect, transform);
+        SetupPrimitive(rect, transform, color);
 
         DrawMesh(rect);
     }
@@ -67,11 +59,13 @@ namespace LGDL
     {
         VertexMesh triangle = PrimitiveTriangle();
 
-        std::vector<Vec2> uv = CalculateUVs(triangle);
+        /*std::vector<Vec2> uv = CalculateUVs(triangle);
 
         ApplyFragData(triangle, color, uv);
 
-        ApplyTransform(triangle, transform);
+        ApplyTransform(triangle, transform);*/
+
+        SetupPrimitive(triangle, transform, color);
 
         DrawMesh(triangle);
     }
@@ -80,11 +74,7 @@ namespace LGDL
     {
         VertexMesh circle = PrimitiveCircle(res);
 
-        std::vector<Vec2> uv = CalculateUVs(circle);
-
-        ApplyFragData(circle, color, uv);
-
-        ApplyTransform(circle, transform);
+        SetupPrimitive(circle, transform, color);
 
         DrawMesh(circle);
     }

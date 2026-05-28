@@ -105,6 +105,17 @@ namespace LGDL
         return UVs;
     }
 
+    void SetupPrimitive(VertexMesh& mesh, const Transform& transform, const Color& color)
+    {
+        std::vector<Vec2> uv = CalculateUVs(mesh);
+
+        ApplyFragData(mesh, color, uv);
+
+        ApplyTransform(mesh, transform);
+
+        // a helper function that turns a primitive into a mesh
+    }
+
     VertexMesh JoinMesh(const VertexMesh& target, const VertexMesh& source)
     {
         VertexMesh output = target;

@@ -11,6 +11,8 @@ namespace LGDL
 
     VertexMesh PrimitiveTriangle();
 
+    VertexMesh PrimitiveArc(int res, float startAngle, float endAngle);
+
     VertexMesh PrimitiveCircle(int res);
 
     VertexMesh CreateTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3);
