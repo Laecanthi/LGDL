@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <LGDL/Types.h>
+#include <LGDL/Texture.h>
 
 namespace LGDL
 {
@@ -53,6 +54,8 @@ namespace LGDL
     {
         Mesh mesh;
         std::vector<InstanceData> instances;
+        
+        Texture texture;
     };
 
     struct GeometryBatch

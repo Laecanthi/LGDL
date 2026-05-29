@@ -175,9 +175,9 @@ namespace LGDL
 
         float referenceSize = size / 5;
 
-        Vec2 reference = AngleVector(ref, size) + position;
+        Vec2 reference = Polar(ref, size) + position;
 
-        DrawLine(reference - AngleVector(ref, referenceSize + thickness), reference + AngleVector(ref, referenceSize), thickness, color);
+        DrawLine(reference - Polar(ref, referenceSize + thickness), reference + Polar(ref, referenceSize), thickness, color);
     }
 
     void Renderer::DrawRefVector(const Vec2& position, const Vec2& vector, const float& ref, const float& thickness, const Color& color)
@@ -185,6 +185,19 @@ namespace LGDL
         DrawVectorRef(position, vector, ref, thickness, color);
 
         DrawVector(position, vector, thickness, color);
+    }
+
+    void Renderer::Write()
+    {
+        InstanceData d;
+        d.transform = {
+            {0,0},
+            {1,1},
+            0
+        };
+        d.color = {1,1,1,1};
+
+        textBatch.instances.push_back(d);
     }
 
 }

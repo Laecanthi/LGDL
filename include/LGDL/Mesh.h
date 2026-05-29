@@ -7,7 +7,7 @@
 
 namespace LGDL
 {
-    Mesh UploadMesh(const std::vector<Vertex>& vertices);
+    Mesh UploadMesh(const VertexMesh& vertexMesh);
     
     void ApplyTransform(VertexMesh& mesh, const Transform& transform);
 

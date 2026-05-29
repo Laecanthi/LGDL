@@ -9,6 +9,7 @@ uniform mat3 uView;
 
 // out
 out vec4 vColor;
+out vec2 vUV;
 
 void main()
 {
@@ -17,4 +18,5 @@ void main()
     gl_Position = vec4(transformed.xy, 0.0, 1.0);
 
     vColor = aColor;
+    vUV = aUV;
 }

@@ -62,6 +62,10 @@ namespace LGDL
         void DrawVectorRef(const Vec2& position, const Vec2& vector, const float& ref, const float& thickness, const Color& color);
         void DrawRefVector(const Vec2& position, const Vec2& vector, const float& ref, const float& thickness, const Color& color);
 
+        // TEXT
+
+        void Write();
+
 
         //void DrawVector(const Vec2& position, const float angle, const float mag, const float& thickness, const Color& color);
 
@@ -71,12 +75,16 @@ namespace LGDL
 
         GLuint SPprimitiveWorld;
         GLuint SPprimitiveUI;
+        GLuint SPprimitiveSprite;
+        
         GLuint instanceVBO;
 
         std::vector<int> renderOrder;
         std::unordered_map<int, RenderTarget> renderTargets;
 
         // batches
+
+        InstanceBatch textBatch;
 
         //InstanceBatch rectBatch;
         //InstanceBatch triBatch;

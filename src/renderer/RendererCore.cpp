@@ -7,6 +7,7 @@
 #include <LGDL/Primitive.h>
 #include <LGDL/Shader.h>
 #include <LGDL/Math.h>
+#include <LGDL/Texture.h>
 
 namespace LGDL
 {
@@ -40,6 +41,13 @@ namespace LGDL
         {
            AttributeSetup(renderTargets[target].geometryBatch);
         }
+
+        // sprite setup
+
+        textBatch.mesh = UploadMesh(PrimitiveRect());
+        InstancedAttributeSetup(textBatch);
+        textBatch.texture = LoadTexture("fonts/Roboto/Roboto Bitmap.png");
+
         //AttributeSetup(worldBatch);
         //AttributeSetup(rectBatch);
         //AttributeSetup(triBatch);
@@ -53,6 +61,11 @@ namespace LGDL
         SPprimitiveUI = CreateShaderProgram(
             "shaders/PrimitiveUI.vert",
             "shaders/Primitive.frag"
+        );
+
+        SPprimitiveSprite = CreateShaderProgram(
+            "shaders/PrimitiveInstanceWorld.vert",
+            "shaders/PrimitiveTexture.frag"
         );
 
 
@@ -83,6 +96,12 @@ namespace LGDL
         );
 
         //std::cout << viewLocation << "\n";
+
+        glUniformMatrix3fv(viewLocation, 1, GL_TRUE, &view.m[0][0]);
+
+        // SET PRIMITIVE INSTANCE WORLD ATTRIBUTES
+
+        glUseProgram(SPprimitiveSprite);
 
         glUniformMatrix3fv(viewLocation, 1, GL_TRUE, &view.m[0][0]);
 
@@ -122,6 +141,12 @@ namespace LGDL
             //std::cout << t.commands.size() << ", " << t.geometryBatch.vertices.size() << "\n";
         }
 
+        DrawInstanceBatch(textBatch);
+
+        //std::cout << textBatch.instances.size() << "\n";
+
+        textBatch.instances.clear();
+
         //std::cout << renderTargets.size() << "\n";
 
         //clear batches
@@ -139,54 +164,52 @@ namespace LGDL
         glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
 
         // position
-        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(3);
         glVertexAttribPointer(
-            1,
+            3,
             2,
             GL_FLOAT,
             GL_FALSE,
             sizeof(InstanceData),
             (void*)offsetof(InstanceData, transform.position)
         );
-        glVertexAttribDivisor(1, 1);
+        glVertexAttribDivisor(3, 1);
 
         // scale
-        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(4);
         glVertexAttribPointer(
-            2,
+            4,
             2,
             GL_FLOAT,
             GL_FALSE,
             sizeof(InstanceData),
             (void*)offsetof(InstanceData, transform.scale)
         );
-        glVertexAttribDivisor(2, 1);
+        glVertexAttribDivisor(4, 1);
 
         // rotation
-        glEnableVertexAttribArray(3);
+        glEnableVertexAttribArray(5);
         glVertexAttribPointer(
-            3,
+            5,
             1,
             GL_FLOAT,
             GL_FALSE,
             sizeof(InstanceData),
             (void*)offsetof(InstanceData, transform.rotation)
         );
-        glVertexAttribDivisor(3, 1);
-
-
+        glVertexAttribDivisor(5, 1);
         
         // color
-        glEnableVertexAttribArray(4);
+        glEnableVertexAttribArray(6);
         glVertexAttribPointer(
-            4,
+            6,
             4,
             GL_FLOAT,
             GL_FALSE,
             sizeof(InstanceData),
             (void*)offsetof(InstanceData, color)
         );
-        glVertexAttribDivisor(4, 1);
+        glVertexAttribDivisor(6, 1);
     }
 
     void Renderer::AttributeSetup(GeometryBatch& batch)
@@ -243,7 +266,22 @@ namespace LGDL
 
     void Renderer::DrawInstanceBatch(const InstanceBatch& batch) // IMPORTANT: THIS ASSUMES VBO IS ALREADY BOUND AND SHADER PROGRAM IS SET
     {
+        glUseProgram(SPprimitiveSprite);
+
         glBindVertexArray(batch.mesh.VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+
+        glUniform1i(
+            glGetUniformLocation(SPprimitiveSprite, "uTexture"),
+            0 // why is this 0?
+        );
+
+        glActiveTexture(GL_TEXTURE0);
+
+        glBindTexture(
+            GL_TEXTURE_2D,
+            batch.texture.ID
+        );
 
         glBufferSubData(
             GL_ARRAY_BUFFER,

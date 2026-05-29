@@ -9,6 +9,7 @@ uniform vec2 uScreen; // input should be the width and height of screen in pixel
 
 // out
 out vec4 vColor;
+out vec2 vUV;
 
 void main()
 {
@@ -19,4 +20,5 @@ void main()
     gl_Position = vec4(screenPos, 0.0, 1.0);
 
     vColor = aColor;
+    vUV = aUV;
 }

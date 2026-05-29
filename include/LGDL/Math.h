@@ -54,6 +54,6 @@ namespace LGDL
 
     float VDir(const Vec2& v);
 
-    Vec2 AngleVector(float angle, float mag);
+    Vec2 Polar(float angle, float mag);
 }
 

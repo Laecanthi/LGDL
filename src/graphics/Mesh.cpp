@@ -6,9 +6,18 @@
 
 namespace LGDL
 {
-    Mesh UploadMesh(const std::vector<Vertex>& vertices)
+    Mesh UploadMesh(const VertexMesh& vertexMesh)
     {
         // create mesh
+
+        std::vector<Vertex> vertices = vertexMesh.vertices;
+
+        std::vector<Vec2> UVs = CalculateUVs(vertexMesh);
+
+        for(int i = 0; i < vertices.size(); i++)
+        {
+            vertices[i].uv = UVs[i];
+        }
 
         Mesh mesh;
 
@@ -32,6 +41,15 @@ namespace LGDL
             (void*)offsetof(Vertex, pos)
         );
         glEnableVertexAttribArray(0);
+
+        // UVs
+
+        glVertexAttribPointer(
+            2, 2, GL_FLOAT, GL_FALSE,
+            sizeof(Vertex),
+            (void*)offsetof(Vertex, uv)
+        );
+        glEnableVertexAttribArray(2);
 
         // set vertex count
         mesh.vertexCount = (int)vertices.size();

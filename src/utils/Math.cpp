@@ -171,7 +171,7 @@ namespace LGDL
         return atan2(v.y, v.x);
     }
 
-    Vec2 AngleVector(float angle, float mag)
+    Vec2 Polar(float angle, float mag)
     {
         return {cos(angle) * mag, sin(angle) * mag};
     }
