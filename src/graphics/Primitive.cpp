@@ -35,6 +35,29 @@ namespace LGDL
         return arc;
     }
 
+    VertexMesh PrimitiveLineArc(int res, float thickness, float startAngle, float endAngle)
+    {
+        VertexMesh arc;
+
+        arc.vertices.reserve(res * 3);
+
+
+        float angle = (endAngle - startAngle) / res;
+
+        for(int i = 0; i < res; i++)
+        {
+            Vec2 thisPoint = {cos(angle * i + startAngle), sin(angle * i + startAngle)};
+            Vec2 nextPoint = {cos(angle * (i+1) + startAngle), sin(angle * (i+1) + startAngle)};
+
+            AppendMesh(
+                arc,
+                CreateRect(thisPoint, thisPoint * (1 - thickness), nextPoint, nextPoint * (1 - thickness))
+            );
+        }
+
+        return arc;
+    }
+
     VertexMesh PrimitiveCircle(int res)
     {
         VertexMesh circle;

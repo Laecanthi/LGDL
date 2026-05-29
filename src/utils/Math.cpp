@@ -4,6 +4,17 @@
 
 namespace LGDL
 {
+    // angles
+
+    float Degrees(float degrees)
+    {
+        return degrees / 180 * PI;
+    }
+
+    float Radians(float radians)
+    {
+        return radians / PI * 180;
+    }
 
     // float
 
@@ -158,5 +169,10 @@ namespace LGDL
     float VDir(const Vec2& v)
     {
         return atan2(v.y, v.x);
+    }
+
+    Vec2 AngleVector(float angle, float mag)
+    {
+        return {cos(angle) * mag, sin(angle) * mag};
     }
 }

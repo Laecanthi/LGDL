@@ -88,6 +88,15 @@ namespace LGDL
         DrawMesh(arc);
     }
 
+    void Renderer::DrawLineArc(int res, float thickness, float startAngle, float endAngle, const Transform& transform, const Color& color)
+    {
+        VertexMesh arc = PrimitiveLineArc(res, thickness, startAngle, endAngle);
+
+        SetupPrimitive(arc, transform, color);
+
+        DrawMesh(arc);
+    }
+
 
     /*
 
@@ -147,4 +156,35 @@ namespace LGDL
 
         DrawTriangle(transform, color);
     }
+
+    void Renderer::DrawVectorRef(const Vec2& position, const Vec2& vector, const float& ref, const float& thickness, const Color& color)
+    {
+        // ratio of vector to reference
+        float ratio = 0.4f;
+
+        float size = VMag(vector) * ratio;
+
+        size = min(max(size, 0.1), VMag(vector));
+
+        Transform transform;
+        transform.position = position;
+        transform.scale = {size, size};
+        transform.rotation = 0;
+
+        DrawLineArc(50, thickness / size, ref, VDir(vector), transform, color);
+
+        float referenceSize = size / 5;
+
+        Vec2 reference = AngleVector(ref, size) + position;
+
+        DrawLine(reference - AngleVector(ref, referenceSize + thickness), reference + AngleVector(ref, referenceSize), thickness, color);
+    }
+
+    void Renderer::DrawRefVector(const Vec2& position, const Vec2& vector, const float& ref, const float& thickness, const Color& color)
+    {
+        DrawVectorRef(position, vector, ref, thickness, color);
+
+        DrawVector(position, vector, thickness, color);
+    }
+
 }

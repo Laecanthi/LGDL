@@ -13,6 +13,15 @@ namespace LGDL
     constexpr float PI = 3.1415926f;
     constexpr float tPI = 6.2831852;
 
+    //angles
+
+    float Degrees(float degrees); //degrees to radians
+    float Radians(float radians); //radians to degrees
+
+    // logical reason for this naming scheme:
+    // the use of these functions are assumed to be in an expression that requires the other
+    // ex. sin() takes in Radians, so sin(Degrees(90)) tells you that degrees are being input rather than radians
+
     // float
 
     float min(float a, float b);
@@ -44,5 +53,7 @@ namespace LGDL
     float VMag(const Vec2& v);
 
     float VDir(const Vec2& v);
+
+    Vec2 AngleVector(float angle, float mag);
 }
 
