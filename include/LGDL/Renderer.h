@@ -73,6 +73,8 @@ namespace LGDL
 
         DrawState drawState;
 
+        GeometryCache geometryCache;
+
         GLuint SPprimitiveWorld;
         GLuint SPprimitiveUI;
         GLuint SPprimitiveSprite;

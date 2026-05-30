@@ -29,7 +29,7 @@ namespace LGDL
 
     void Renderer::DrawRect(const Transform& transform, const Color& color)
     {
-        VertexMesh rect = PrimitiveRect();
+        VertexMesh rect = geometryCache.rect;
         
         SetupPrimitive(rect, transform, color);
 
@@ -38,7 +38,7 @@ namespace LGDL
 
     void Renderer::DrawRect(const Vec2& pos, const Vec2& size, const Color& color) // draws rect from bottom left corner rather than center
     {
-        VertexMesh rect = PrimitiveRect();
+        VertexMesh rect = geometryCache.rect;
 
         Transform transform;
 
@@ -57,7 +57,7 @@ namespace LGDL
 
     void Renderer::DrawTriangle(const Transform& transform, const Color& color)
     {
-        VertexMesh triangle = PrimitiveTriangle();
+        VertexMesh triangle = geometryCache.triangle;
 
         /*std::vector<Vec2> uv = CalculateUVs(triangle);
 
@@ -72,18 +72,36 @@ namespace LGDL
 
     void Renderer::DrawCircle(int res, const Transform& transform, const Color& color)
     {
-        VertexMesh circle = PrimitiveCircle(res);
+        auto it = geometryCache.circles.find(res);
 
-        SetupPrimitive(circle, transform, color);
+        if(it != geometryCache.circles.end())
+        {
+            VertexMesh circle = it->second;
 
-        DrawMesh(circle);
+            SetupPrimitive(circle, transform, color);
+
+            DrawMesh(circle);
+        }else{
+
+            std::cout << "New circle res was cached: " << res << "! \n";
+
+            VertexMesh circle = PrimitiveCircle(res);
+
+            CalculateAndApplyUVs(circle); // btw this function returns the mesh in scenarios where there's no original mesh to have modified in the first place
+
+            geometryCache.circles[res] = circle; 
+
+            SetupPrimitive(circle, transform, color, false); // for context the default value for CalculateUVs is false
+
+            DrawMesh(circle);
+        }
     }
 
     void Renderer::DrawArc(int res, float startAngle, float endAngle, const Transform& transform, const Color& color)
     {
         VertexMesh arc = PrimitiveArc(res, startAngle, endAngle);
 
-        SetupPrimitive(arc, transform, color);
+        SetupPrimitive(arc, transform, color, true);
 
         DrawMesh(arc);
     }
@@ -92,7 +110,7 @@ namespace LGDL
     {
         VertexMesh arc = PrimitiveLineArc(res, thickness, startAngle, endAngle);
 
-        SetupPrimitive(arc, transform, color);
+        SetupPrimitive(arc, transform, color, true);
 
         DrawMesh(arc);
     }

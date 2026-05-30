@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
 
 #include <LGDL/Types.h>
 #include <LGDL/Texture.h>
@@ -70,5 +71,13 @@ namespace LGDL
     {
         VertexMesh mesh;
         int layer;
+    };
+
+        struct GeometryCache
+    {
+        VertexMesh rect;
+        VertexMesh triangle;
+
+        std::unordered_map<int, VertexMesh> circles;
     };
 }

@@ -123,11 +123,27 @@ namespace LGDL
         return UVs;
     }
 
-    void SetupPrimitive(VertexMesh& mesh, const Transform& transform, const Color& color)
+    VertexMesh CalculateAndApplyUVs (VertexMesh& mesh)
     {
         std::vector<Vec2> uv = CalculateUVs(mesh);
 
-        ApplyFragData(mesh, color, uv);
+        ApplyFragData(mesh, {0,0,0,1}, uv);
+
+        return mesh;
+
+        // for the sake of applying UVs, the default color is black with an alpha of 1
+    }
+
+    void SetupPrimitive(VertexMesh& mesh, const Transform& transform, const Color& color, bool calculateUVs)
+    {
+        if(calculateUVs)
+        {
+            std::vector<Vec2> uv = CalculateUVs(mesh);
+
+            ApplyFragData(mesh, color, uv);
+        }else{
+            ApplyFragData(mesh, color);
+        }
 
         ApplyTransform(mesh, transform);
 

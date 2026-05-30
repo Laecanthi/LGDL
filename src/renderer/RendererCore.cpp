@@ -33,7 +33,17 @@ namespace LGDL
         glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(InstanceData) * MAX_INSTANCES, nullptr, GL_DYNAMIC_DRAW);
 
-        // world batch setup
+        // cache primitives
+
+        geometryCache.rect = CalculateAndApplyUVs(PrimitiveRect());
+        geometryCache.triangle = CalculateAndApplyUVs(PrimitiveTriangle());
+        geometryCache.circles[3] =  CalculateAndApplyUVs(PrimitiveCircle(3));
+        geometryCache.circles[4] =  CalculateAndApplyUVs(PrimitiveCircle(4));
+        geometryCache.circles[6] =  CalculateAndApplyUVs(PrimitiveCircle(6));
+        geometryCache.circles[12] =  CalculateAndApplyUVs(PrimitiveCircle(12));
+        geometryCache.circles[24] =  CalculateAndApplyUVs(PrimitiveCircle(24));
+        geometryCache.circles[50] =  CalculateAndApplyUVs(PrimitiveCircle(50));
+        geometryCache.circles[100] =  CalculateAndApplyUVs(PrimitiveCircle(100));
 
 
         // setup attributes
