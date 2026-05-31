@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <variant>
 
 #include <LGDL/Mesh.h>
 #include <LGDL/Types.h>
@@ -18,9 +19,21 @@ namespace LGDL
 
     struct RenderTarget
     {
-        std::vector<DrawCommand> commands;
+        std::vector<RenderCommand> commands; // RenderCommand is an std::varient
+            // can be either a DrawCommand (goes into geometryBatch)
+                // draw commands must be flattened before going into the batch
+            // or InstanceData (goes into instanceBatch)
+                // instance data can go directly into the batch
+
+        // note: I could probably make the batches also a varient, because of how shaders get assigned there can't be both anyways
+            // for now, they will stay seperate. However; things will break if attempting to use both batch types in the same target
+            // because of that, it probably wouldn't be a bad idea to clarify what type of batch each RenderTarget uses
 
         GeometryBatch geometryBatch;
+            // requires a VBO, VAO, and a list of Vertex (vertices)
+
+        InstanceBatch instanceBatch;
+            // requires a Mesh (mesh), Texture (texture), and list of InstanceData (instances)
 
         GLuint shaderProgram;
     };

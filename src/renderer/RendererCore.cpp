@@ -3,6 +3,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <algorithm>
+#include <variant>
 
 #include <LGDL/Primitive.h>
 #include <LGDL/Shader.h>
@@ -19,7 +20,9 @@ namespace LGDL
         SetState(0,0);
 
         renderOrder.push_back(0); // world
-        renderOrder.push_back(1); // ui
+        renderOrder.push_back(5); // world text
+        renderOrder.push_back(10); // ui
+        renderOrder.push_back(15); // ui text
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -50,13 +53,16 @@ namespace LGDL
         for(int target : renderOrder)
         {
            AttributeSetup(renderTargets[target].geometryBatch);
+
+            // for now, the default instanceBatch mesh is a primitive. This can be overwritten later.
+
+           renderTargets[target].instanceBatch.mesh = UploadMesh(PrimitiveRect());
+            InstancedAttributeSetup(renderTargets[target].instanceBatch);
         }
 
         // sprite setup
 
-        textBatch.mesh = UploadMesh(PrimitiveRect());
-        InstancedAttributeSetup(textBatch);
-        textBatch.texture = LoadTexture("fonts/Roboto/Roboto Bitmap.png");
+        renderTargets[5].instanceBatch.texture = LoadTexture("fonts/Roboto/Roboto Bitmap.png");
 
         //AttributeSetup(worldBatch);
         //AttributeSetup(rectBatch);
@@ -80,7 +86,8 @@ namespace LGDL
 
 
         renderTargets[0].shaderProgram = SPprimitiveWorld;
-        renderTargets[1].shaderProgram = SPprimitiveUI;
+        renderTargets[5].shaderProgram = SPprimitiveSprite;
+        renderTargets[10].shaderProgram = SPprimitiveUI;
     }
 
     void Renderer::BeginFrame(const Camera& cam, const Screen& screen)
@@ -143,7 +150,15 @@ namespace LGDL
 
             glUseProgram(t.shaderProgram); // set shader per target
 
-            DrawGeometryBatch(t.geometryBatch); // draw target's batch
+            if(t.geometryBatch.vertices.size() != 0)
+            {
+                DrawGeometryBatch(t.geometryBatch); // draw target's batch
+            }
+            if(t.instanceBatch.instances.size() != 0)
+            {
+                DrawInstanceBatch(t.instanceBatch);
+            }
+            
 
             t.geometryBatch.vertices.clear(); // clear batch data
             t.commands.clear(); // clear commands
@@ -151,7 +166,7 @@ namespace LGDL
             //std::cout << t.commands.size() << ", " << t.geometryBatch.vertices.size() << "\n";
         }
 
-        DrawInstanceBatch(textBatch);
+        //DrawInstanceBatch(textBatch);
 
         //std::cout << textBatch.instances.size() << "\n";
 
@@ -274,9 +289,12 @@ namespace LGDL
         );
     }
 
-    void Renderer::DrawInstanceBatch(const InstanceBatch& batch) // IMPORTANT: THIS ASSUMES VBO IS ALREADY BOUND AND SHADER PROGRAM IS SET
+    void Renderer::DrawInstanceBatch(const InstanceBatch& batch)
     {
-        glUseProgram(SPprimitiveSprite);
+        //glUseProgram(SPprimitiveSprite); // this is also now going to assume the shader program is already set
+            //despite this being potentially dangerous, it means less passing variables lol
+            //hooray for a stateful system, I guess?
+            //I mean I know for a fact this is only called in a singular place (as if 5/30/26)
 
         glBindVertexArray(batch.mesh.VAO);
         glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -341,35 +359,54 @@ namespace LGDL
             std::stable_sort(
                 target.commands.begin(),
                 target.commands.end(),
-                [](const DrawCommand& a, const DrawCommand& b)
+                [](const RenderCommand& a, const RenderCommand& b)
                 {
                     return a.layer < b.layer;
                 }
             );
 
-            // clear geometry buffer
-            //target.geometryBatch.vertices.clear();
-            //already clearned in flush(), doesn't need to ble cleared twice
-
-            // pre-calculate total vertex count
             size_t totalVertices = 0;
 
-            for(const DrawCommand& cmd : target.commands)
+            for(const RenderCommand& cmd : target.commands)
             {
-                totalVertices += cmd.mesh.vertices.size();
+                std::visit([&](auto&& data)
+                {
+                    using T = std::decay_t<decltype(data)>;
+
+                    if constexpr(std::is_same_v<T, DrawCommand>)
+                    {
+                        totalVertices += data.mesh.vertices.size();
+                    }
+                }, cmd.command);
             }
+
+            //target.geometryBatch.vertices.clear();
+            //target.instanceBatch.instances.clear();
 
             target.geometryBatch.vertices.reserve(totalVertices);
 
-            // flatten meshes into geometry buffer
-            for(const DrawCommand& cmd : target.commands)
+            for(const RenderCommand& cmd : target.commands)
             {
-                target.geometryBatch.vertices.insert(
-                    target.geometryBatch.vertices.end(),
-                    cmd.mesh.vertices.begin(),
-                    cmd.mesh.vertices.end()
-                );
+                std::visit([&](auto&& data)
+                {
+                    using T = std::decay_t<decltype(data)>;
+
+                    if constexpr(std::is_same_v<T, DrawCommand>)
+                    {
+                        target.geometryBatch.vertices.insert(
+                            target.geometryBatch.vertices.end(),
+                            data.mesh.vertices.begin(),
+                            data.mesh.vertices.end()
+                        );
+                    }
+                    else if constexpr(std::is_same_v<T, InstanceData>)
+                    {
+                        target.instanceBatch.instances.push_back(data);
+                    }
+                }, cmd.command);
             }
+
+
         }
     }
 }

@@ -13,11 +13,10 @@ namespace LGDL
         DrawCommand cmd;
 
         cmd.mesh = mesh;
-        cmd.layer = drawState.layer;
 
         renderTargets[drawState.target]
             .commands
-            .push_back(cmd);
+            .push_back(RenderCommand(cmd, drawState.layer));
     }
 
     /*void Renderer::PushTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3) // be aware that this does NOT give any information to the frag shader
@@ -215,7 +214,9 @@ namespace LGDL
         };
         d.color = {1,1,1,1};
 
-        textBatch.instances.push_back(d);
+        renderTargets[drawState.target]
+            .commands
+            .push_back(RenderCommand(d, drawState.layer));
     }
 
 }

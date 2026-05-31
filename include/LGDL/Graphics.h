@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <variant>
 
 #include <LGDL/Types.h>
 #include <LGDL/Texture.h>
@@ -70,10 +71,19 @@ namespace LGDL
     struct DrawCommand
     {
         VertexMesh mesh;
-        int layer;
+        //int layer;
     };
 
-        struct GeometryCache
+    struct RenderCommand
+    {
+        std::variant<InstanceData, DrawCommand> command;
+        int layer;
+
+        RenderCommand(const InstanceData& i, int l) : command(i), layer(l) {};
+        RenderCommand(const DrawCommand& d, int l) : command(d), layer(l) {};
+    };
+
+    struct GeometryCache
     {
         VertexMesh rect;
         VertexMesh triangle;
