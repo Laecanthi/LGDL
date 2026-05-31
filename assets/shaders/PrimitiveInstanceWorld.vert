@@ -9,6 +9,9 @@ layout (location = 3) in vec2 iPosition;
 layout (location = 4) in vec2 iScale;
 layout (location = 5) in float iRotation;
 layout (location = 6) in vec4 iColor;
+layout (location = 7) in vec2 iMinUV;
+layout (location = 8) in vec2 iMaxUV;
+
 
 // camera transform
 
@@ -40,5 +43,8 @@ void main()
     //gl_Position = vec4(aPos, 0.0, 1.0);
 
     vColor = iColor;
-    vUV = aUV;
+
+    vec2 UVScale = iMaxUV - iMinUV;
+
+    vUV = aUV * UVScale + iMinUV;
 }

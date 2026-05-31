@@ -41,13 +41,13 @@ namespace LGDL
         glTexParameteri(
             GL_TEXTURE_2D,
             GL_TEXTURE_MIN_FILTER,
-            GL_NEAREST
+            GL_LINEAR
         );
 
         glTexParameteri(
             GL_TEXTURE_2D,
             GL_TEXTURE_MAG_FILTER,
-            GL_NEAREST
+            GL_LINEAR
         );
 
         glTexParameteri(
@@ -91,6 +91,12 @@ namespace LGDL
         );
 
         glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(
+            GL_TEXTURE_2D,
+            GL_TEXTURE_MIN_FILTER,
+            GL_LINEAR_MIPMAP_LINEAR
+        );
 
         // free CPU image data
         stbi_image_free(data);

@@ -99,7 +99,7 @@ namespace LGDL
 
         // batches
 
-        InstanceBatch textBatch;
+        //InstanceBatch textBatch;
 
         //InstanceBatch rectBatch;
         //InstanceBatch triBatch;

@@ -82,7 +82,7 @@ namespace LGDL
             DrawMesh(circle);
         }else{
 
-            std::cout << "New circle res was cached: " << res << "! \n";
+            //std::cout << "New circle res was cached: " << res << "! \n";
 
             VertexMesh circle = PrimitiveCircle(res);
 
@@ -210,9 +210,11 @@ namespace LGDL
         d.transform = {
             {0,0},
             {1,1},
-            0
+            Degrees(0)
         };
-        d.color = {1,1,1,1};
+        d.color = {1,0,0,1};
+        d.minUV = {0,0};
+        d.maxUV = {1,1};
 
         renderTargets[drawState.target]
             .commands

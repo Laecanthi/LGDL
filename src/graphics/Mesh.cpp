@@ -169,4 +169,56 @@ namespace LGDL
             source.vertices.end()
         );
     }
+
+
+
+
+    std::vector<Vec2> CreateVerticesFromEquation(
+        std::function<float(float)> func,
+        float min, float max,
+        int minSamples, float fidelity, int maxDepth)
+    {
+        std::vector<Vec2> points;
+
+        float scale = max - min;
+        float step = scale / minSamples;
+
+        points.push_back({min, func(min)});
+
+        for(int i = 0; i < minSamples; i++)
+        {
+            float x1 = min + (i * step);
+            float x2 = min + ((i+1) * step);
+            Subdivide(func, x1, func(x1), x2, func(x2), fidelity, 0, maxDepth, points);
+        }   
+        
+        return points;
+    }
+
+    void Subdivide(
+        const std::function<float(float)>& func,
+        float x1, float y1,
+        float x2, float y2,
+        float fidelity,
+        int depth,
+        int maxDepth,
+        std::vector<Vec2>& out
+    )
+    {
+        float xm = (x1 + x2) * 0.5f;
+        float ym = func(xm);
+
+        float yLinear = (y1 + y2) * 0.5f;
+
+        float error = abs(ym - yLinear);
+
+        if (error > fidelity && depth < maxDepth)
+        {
+            Subdivide(func, x1, y1, xm, ym, fidelity, depth + 1, maxDepth, out);
+            Subdivide(func, xm, ym, x2, y2, fidelity, depth + 1, maxDepth, out);
+            return;
+        }
+
+        out.push_back({x2, y2});
+    }
 }

@@ -50,6 +50,11 @@ namespace LGDL
     {
         Transform transform;
         Color color;
+
+        // UVs are between 0 and 1
+
+        Vec2 minUV; // for no change: (0,0)
+        Vec2 maxUV; // for no change: (1,1)
     };
 
     struct InstanceBatch

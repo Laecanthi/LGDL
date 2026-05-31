@@ -62,7 +62,13 @@ namespace LGDL
 
         // sprite setup
 
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
         renderTargets[5].instanceBatch.texture = LoadTexture("fonts/Roboto/Roboto Bitmap.png");
+
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         //AttributeSetup(worldBatch);
         //AttributeSetup(rectBatch);
@@ -162,6 +168,7 @@ namespace LGDL
 
             t.geometryBatch.vertices.clear(); // clear batch data
             t.commands.clear(); // clear commands
+            t.instanceBatch.instances.clear(); // clears instances
 
             //std::cout << t.commands.size() << ", " << t.geometryBatch.vertices.size() << "\n";
         }
@@ -170,7 +177,7 @@ namespace LGDL
 
         //std::cout << textBatch.instances.size() << "\n";
 
-        textBatch.instances.clear();
+        //textBatch.instances.clear();
 
         //std::cout << renderTargets.size() << "\n";
 
@@ -235,6 +242,30 @@ namespace LGDL
             (void*)offsetof(InstanceData, color)
         );
         glVertexAttribDivisor(6, 1);
+
+        // minUV
+        glEnableVertexAttribArray(7);
+        glVertexAttribPointer(
+            7,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            sizeof(InstanceData),
+            (void*)offsetof(InstanceData, minUV)
+        );
+        glVertexAttribDivisor(7, 1);
+
+        // maxUV
+        glEnableVertexAttribArray(8);
+        glVertexAttribPointer(
+            8,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            sizeof(InstanceData),
+            (void*)offsetof(InstanceData, maxUV)
+        );
+        glVertexAttribDivisor(8, 1);
     }
 
     void Renderer::AttributeSetup(GeometryBatch& batch)
