@@ -5,6 +5,7 @@
 #include <LGDL/Primitive.h>
 #include <LGDL/Shader.h>
 #include <LGDL/Math.h>
+#include <LGDL/Glyphs.h>
 
 namespace LGDL
 {
@@ -204,21 +205,46 @@ namespace LGDL
         DrawVector(position, vector, thickness, color);
     }
 
-    void Renderer::Write()
+    void Renderer::Write(const std::string& text, Vec2 pos, float size, Font& font)
     {
-        InstanceData d;
-        d.transform = {
-            {0,0},
-            {1,1},
-            Degrees(0)
-        };
-        d.color = {1,0,0,1};
-        d.minUV = {0,0};
-        d.maxUV = {1,1};
+        Vec2 penPosition = pos;
 
-        renderTargets[drawState.target]
-            .commands
-            .push_back(RenderCommand(d, drawState.layer));
+        penPosition += {0, font.lineHeight / font.defaultFontSize * size};
+        
+        for(char c : text)
+        {
+            Glyph glyph = font.glyphs[static_cast<int>(c)];
+
+            InstanceData instance;
+
+            instance.transform.position = penPosition;
+            instance.transform.position += {
+                (glyph.offset.x  / font.defaultFontSize) * size,
+                (-glyph.offset.y  / font.defaultFontSize) * size
+            };
+
+            instance.transform.scale = {
+                (glyph.size.x  / font.defaultFontSize) * size,
+                (-glyph.size.y  / font.defaultFontSize) * size
+            };
+
+            instance.transform.rotation = 0;
+
+            instance.minUV = glyph.uvMin;
+            instance.maxUV = glyph.uvMax;
+
+            instance.color = {0,0,0,1}; // for now, font color is defaulted to black;
+
+            renderTargets[drawState.target].instanceBatch.instances.push_back(instance);
+
+            penPosition.x += glyph.advance / font.defaultFontSize * size;
+
+            /*std::cout
+                << glyph.offset.x << ", "
+                << glyph.offset.y << ", "
+                << glyph.size.x << ", "
+                << glyph.size.y << "\n";*/
+        }
     }
 
 }

@@ -14,5 +14,5 @@ namespace LGDL
         int channels;
     };
 
-    Texture LoadTexture(const std::string& path);
+    Texture LoadTexture(const std::string& relativePath);
 }

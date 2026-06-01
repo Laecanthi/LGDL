@@ -6,3 +6,4 @@
 #include <LGDL/Primitive.h>
 #include <LGDL/Types.h>
 #include <LGDL/Math.h>
+#include <LGDL/Glyphs.h>

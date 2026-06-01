@@ -56,7 +56,7 @@ namespace LGDL
 
             // for now, the default instanceBatch mesh is a primitive. This can be overwritten later.
 
-           renderTargets[target].instanceBatch.mesh = UploadMesh(PrimitiveRect());
+           renderTargets[target].instanceBatch.mesh = UploadMesh(CreateRect({0,1},{1,1},{0,0},{1,0}));
             InstancedAttributeSetup(renderTargets[target].instanceBatch);
         }
 
@@ -65,7 +65,7 @@ namespace LGDL
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        renderTargets[5].instanceBatch.texture = LoadTexture("fonts/Roboto/Roboto Bitmap.png");
+        //renderTargets[5].instanceBatch.texture = LoadTexture("fonts/Roboto/Roboto Bitmap.png");
 
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

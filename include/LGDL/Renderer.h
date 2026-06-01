@@ -8,6 +8,7 @@
 #include <LGDL/Types.h>
 #include <LGDL/Graphics.h>
 #include <LGDL/Camera.h>
+#include <LGDL/Glyphs.h>
 
 namespace LGDL
 {
@@ -77,10 +78,12 @@ namespace LGDL
 
         // TEXT
 
-        void Write();
+        void Write(const std::string& text, Vec2 pos, float size, Font& font);
 
 
         //void DrawVector(const Vec2& position, const float angle, const float mag, const float& thickness, const Color& color);
+
+        std::unordered_map<int, RenderTarget> renderTargets;
 
     private:
 
@@ -95,7 +98,7 @@ namespace LGDL
         GLuint instanceVBO;
 
         std::vector<int> renderOrder;
-        std::unordered_map<int, RenderTarget> renderTargets;
+        
 
         // batches
 
