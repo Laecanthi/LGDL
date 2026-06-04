@@ -123,9 +123,11 @@ namespace LGDL
         return UVs;
     }
 
-    VertexMesh CalculateAndApplyUVs (VertexMesh& mesh)
+    VertexMesh CalculateAndApplyUVs (const VertexMesh& m)
     {
-        std::vector<Vec2> uv = CalculateUVs(mesh);
+        std::vector<Vec2> uv = CalculateUVs(m);
+
+        VertexMesh mesh = m;
 
         ApplyFragData(mesh, {0,0,0,1}, uv);
 
@@ -210,7 +212,7 @@ namespace LGDL
 
         float yLinear = (y1 + y2) * 0.5f;
 
-        float error = abs(ym - yLinear);
+        float error = fabs(ym - yLinear);
 
         if (error > fidelity && depth < maxDepth)
         {

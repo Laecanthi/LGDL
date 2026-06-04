@@ -78,7 +78,7 @@ namespace LGDL
 
         // TEXT
 
-        void Write(const std::string& text, Vec2 pos, float size, Font& font);
+        void Write(const std::string& text, Vec2 pos, float size, Font& font, const Color& color);
 
 
         //void DrawVector(const Vec2& position, const float angle, const float mag, const float& thickness, const Color& color);

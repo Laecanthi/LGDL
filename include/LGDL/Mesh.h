@@ -16,7 +16,7 @@ namespace LGDL
 
     std::vector<Vec2> CalculateUVs(const VertexMesh& mesh);
 
-    VertexMesh CalculateAndApplyUVs (VertexMesh& mesh);
+    VertexMesh CalculateAndApplyUVs (const VertexMesh& m);
 
     void SetupPrimitive(VertexMesh& mesh, const Transform& transform, const Color& color, bool calculateUVs = false);
 

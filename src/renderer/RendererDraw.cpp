@@ -87,7 +87,7 @@ namespace LGDL
 
             VertexMesh circle = PrimitiveCircle(res);
 
-            CalculateAndApplyUVs(circle); // btw this function returns the mesh in scenarios where there's no original mesh to have modified in the first place
+            circle = CalculateAndApplyUVs(circle); // btw this function returns the mesh in scenarios where there's no original mesh to have modified in the first place
 
             geometryCache.circles[res] = circle; 
 
@@ -205,7 +205,7 @@ namespace LGDL
         DrawVector(position, vector, thickness, color);
     }
 
-    void Renderer::Write(const std::string& text, Vec2 pos, float size, Font& font)
+    void Renderer::Write(const std::string& text, Vec2 pos, float size, Font& font, const Color& color)
     {
         Vec2 penPosition = pos;
 
@@ -233,7 +233,7 @@ namespace LGDL
             instance.minUV = glyph.uvMin;
             instance.maxUV = glyph.uvMax;
 
-            instance.color = {0,0,0,1}; // for now, font color is defaulted to black;
+            instance.color = color;
 
             renderTargets[drawState.target].instanceBatch.instances.push_back(instance);
 
