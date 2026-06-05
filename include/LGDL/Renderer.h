@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <variant>
+#include <deque>
 
 #include <LGDL/Mesh.h>
 #include <LGDL/Types.h>
@@ -12,6 +13,10 @@
 
 namespace LGDL
 {
+
+    // STRUCTS: The structs that go here in Renderer.h either are GLAD specific or Renderer specific
+        // Anything that may be needed to be used for non renderer purposes (say, in Mesh.h) do not belong here
+
     struct DrawState
     {
         int target;
@@ -36,18 +41,66 @@ namespace LGDL
         InstanceBatch instanceBatch;
             // requires a Mesh (mesh), Texture (texture), and list of InstanceData (instances)
 
-        GLuint shaderProgram;
+        ShaderProgram* program = nullptr;
     };
 
-    class Renderer
+    enum class Uniform
+    {
+        View,
+        Screen,
+        Texture0
+    };
+
+    inline const char* UniformName(Uniform u) // THIS is the list of uniform enum -> names
+    {
+        //apparently the function wants a GLchar but that's undefined so uh I'll just use char and pray there's no errors
+
+        switch(u)
+        {
+            case Uniform::View:
+                return "uView";
+
+            case Uniform::Screen:
+                return "uScreen";
+
+            case Uniform::Texture0:
+                return "uTexture";
+        }
+
+        return "";
+    }
+
+
+    struct ShaderProgram
+    {
+        GLuint ID;
+
+        std::unordered_map<Uniform, GLint> uniformLocations;
+
+        std::vector<Uniform> uniforms; // this can just be a list, order doesn't actually matter
+
+        GLint GetUniformLocation(Uniform u) const
+        {
+            return uniformLocations.at(u);
+        }
+
+        bool HasUniform(Uniform u) const
+        {
+            return uniformLocations.contains(u);
+        }
+    };
+
+
+    class Renderer /******************************* RENDERER CLASS *******************************************/
     {
     public:
 
-        // CORE
+        // CORE (RendererCore.cpp)
 
         void Initialize();
         void InstancedAttributeSetup(const InstanceBatch& batch);
         void AttributeSetup(GeometryBatch& batch);
+        void UploadUniforms(ShaderProgram& shader, const Camera& cam, const Screen& screen);
         void BeginFrame(const Camera& cam, const Screen& screen);
         void Flush();
         void DrawInstanceBatch(const InstanceBatch& batch);
@@ -55,7 +108,7 @@ namespace LGDL
         void SetState(int target, int layer);
         void SortCommands();
 
-        // DRAW
+        // DRAW (RendererDraw.cpp)
 
         void DrawMesh(const VertexMesh& mesh);
         void PushTriangle(const Vec2& v1, const Vec2& v2, const Vec2& v3);
@@ -76,7 +129,7 @@ namespace LGDL
         void DrawVectorRef(const Vec2& position, const Vec2& vector, const float& ref, const float& thickness, const Color& color);
         void DrawRefVector(const Vec2& position, const Vec2& vector, const float& ref, const float& thickness, const Color& color);
 
-        // TEXT
+            // (text)
 
         void Write(const std::string& text, Vec2 pos, float size, Font& font, const Color& color);
 
@@ -84,6 +137,7 @@ namespace LGDL
         //void DrawVector(const Vec2& position, const float angle, const float mag, const float& thickness, const Color& color);
 
         std::unordered_map<int, RenderTarget> renderTargets;
+        std::deque<ShaderProgram> shaderPrograms;
 
     private:
 
@@ -91,9 +145,11 @@ namespace LGDL
 
         GeometryCache geometryCache;
 
-        GLuint SPprimitiveWorld;
-        GLuint SPprimitiveUI;
-        GLuint SPprimitiveSprite;
+        
+
+        //GLuint SPprimitiveWorld;
+        //GLuint SPprimitiveUI;
+        //GLuint SPprimitiveSprite;
         
         GLuint instanceVBO;
 

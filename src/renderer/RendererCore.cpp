@@ -96,6 +96,61 @@ namespace LGDL
         renderTargets[10].shaderProgram = SPprimitiveUI;
     }
 
+     void Renderer::UploadUniforms(ShaderProgram& shader, const Camera& cam, const Screen& screen)
+     {
+        glUseProgram(shader.ID);
+
+        for(Uniform u : shader.uniforms)
+        {
+            switch(u)
+            {
+                case Uniform::View:
+                {
+                    Mat3 view = Multiply(
+                        Scale({
+                            cam.zoom / cam.aspectRatio,
+                            cam.zoom
+                        }),
+                        Translate({
+                            -cam.position.x,
+                            -cam.position.y
+                        })
+                    );
+
+                    glUniformMatrix3fv(
+                        shader.GetUniformLocation(Uniform::View),
+                        1,
+                        GL_TRUE,
+                        &view.m[0][0]
+                    );
+
+                    break;
+                }
+
+                case Uniform::Screen:
+                {
+                    glUniform2f(
+                        shader.GetUniformLocation(Uniform::Screen),
+                        screen.dimensions.x,
+                        screen.dimensions.y
+                    );
+
+                    break;
+                }
+
+                case Uniform::Texture0:
+                {
+                    glUniform1i(
+                        shader.GetUniformLocation(Uniform::Texture0),
+                        0
+                    );
+
+                    break;
+                }
+            }
+        }
+    }
+
     void Renderer::BeginFrame(const Camera& cam, const Screen& screen)
     {
         glClearColor(
@@ -107,34 +162,12 @@ namespace LGDL
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // SET PRIMITIVE WORLD ATTRIBUTES
+        for(int target : renderOrder)
+        {
+            RenderTarget& t = renderTargets[target];
 
-        glUseProgram(SPprimitiveWorld);
-
-        GLint viewLocation = glGetUniformLocation(SPprimitiveWorld, "uView");
-
-        Mat3 view = Multiply(
-            Scale({cam.zoom / cam.aspectRatio, cam.zoom}),
-            Translate({-cam.position.x, -cam.position.y})
-        );
-
-        //std::cout << viewLocation << "\n";
-
-        glUniformMatrix3fv(viewLocation, 1, GL_TRUE, &view.m[0][0]);
-
-        // SET PRIMITIVE INSTANCE WORLD ATTRIBUTES
-
-        glUseProgram(SPprimitiveSprite);
-
-        glUniformMatrix3fv(viewLocation, 1, GL_TRUE, &view.m[0][0]);
-
-        // SET PRIMITIVE UI ATTRIBUTES
-
-        glUseProgram(SPprimitiveUI);
-
-        GLint screenLocation = glGetUniformLocation(SPprimitiveUI, "uScreen");
-
-        glUniform2f(screenLocation, screen.dimensions.x, screen.dimensions.y);
+            UploadUniforms(t.program, cam, screen);
+        }
     }
 
     void Renderer::Flush()

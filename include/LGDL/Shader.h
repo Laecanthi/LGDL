@@ -1,11 +1,13 @@
 #pragma once
 
 #include <LGDL/Types.h>
+#include <LGDL/Renderer.h>
 
 namespace LGDL
 {
-    GLuint CreateShaderProgram(
+    ShaderProgram CreateShaderProgram(
         const char* vertexPath,
-        const char* fragmentPath
+        const char* fragmentPath,
+        std::vector<Uniform> uniforms
     );
 }

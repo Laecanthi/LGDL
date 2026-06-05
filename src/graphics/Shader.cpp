@@ -11,9 +11,10 @@
 
 namespace LGDL
 {
-    GLuint CreateShaderProgram(
+    ShaderProgram CreateShaderProgram(
         const char* vertexPath,
-        const char* fragmentPath
+        const char* fragmentPath,
+        std::vector<Uniform> uniforms
     )
     {
         // load shader files
@@ -37,6 +38,18 @@ namespace LGDL
 
         glCompileShader(vertexShader);
 
+        // check vertex shader
+
+        GLint success;
+        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+        if (!success)
+        {
+            char log[1024];
+            glGetShaderInfoLog(vertexShader, 1024, NULL, log);
+            std::cout << "VERTEX SHADER ERROR:\n" << log << "\n";
+        }
+
         // create fragment shader
 
         GLuint fragmentShader =
@@ -52,6 +65,17 @@ namespace LGDL
         );
 
         glCompileShader(fragmentShader);
+
+        // check fragment shader
+
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
+        if (!success)
+        {
+            char log[1024];
+            glGetShaderInfoLog(fragmentShader, 1024, NULL, log);
+            std::cout << "VERTEX SHADER ERROR:\n" << log << "\n";
+        }
 
         // create program
 
@@ -71,7 +95,7 @@ namespace LGDL
 
         // return program
         
-        GLint success;
+        //GLint success; // success is already initialized locally so no need to do it twice
         glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 
         if (!success)
@@ -81,18 +105,20 @@ namespace LGDL
             std::cout << "SHADER LINK ERROR:\n" << log << "\n";
         }
 
-        glCompileShader(vertexShader);
+        ShaderProgram program;
 
-        //GLint success;
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+        program.ID = shaderProgram;
+        program.uniforms = uniforms;
 
-        if (!success)
+        for(Uniform u : program.uniforms)
         {
-            char log[1024];
-            glGetShaderInfoLog(vertexShader, 1024, NULL, log);
-            std::cout << "VERTEX SHADER ERROR:\n" << log << "\n";
+            program.uniformLocations[u] =
+                glGetUniformLocation(
+                    program.ID,
+                    UniformName(u)
+                );
         }
 
-        return shaderProgram;
+        return program;
     }
 }
