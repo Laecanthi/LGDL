@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <algorithm>
 #include <variant>
+#include <unordered_map>
 
 #include <LGDL/Primitive.h>
 #include <LGDL/Shader.h>
@@ -65,7 +66,8 @@ namespace LGDL
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        //renderTargets[5].instanceBatch.texture = LoadTexture("fonts/Roboto/Roboto Bitmap.png");
+        renderTargets[5].instanceBatch.texture = LoadTexture("fonts/Roboto/Roboto Bitmap.png");
+        renderTargets[15].instanceBatch.texture = LoadTexture("fonts/Roboto/Roboto Bitmap.png");
 
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -75,25 +77,35 @@ namespace LGDL
         //AttributeSetup(triBatch);
 
         // create shader program
-        SPprimitiveWorld = CreateShaderProgram(
+        shaderPrograms.emplace(0, CreateShaderProgram(
             "shaders/PrimitiveWorld.vert",
-            "shaders/Primitive.frag"
-        );
+            "shaders/Primitive.frag",
+            {Uniform::View}
+        ));
 
-        SPprimitiveUI = CreateShaderProgram(
+        shaderPrograms.emplace(1, CreateShaderProgram(
             "shaders/PrimitiveUI.vert",
-            "shaders/Primitive.frag"
-        );
+            "shaders/Primitive.frag",
+            {Uniform::Screen}
+        ));
 
-        SPprimitiveSprite = CreateShaderProgram(
+        shaderPrograms.emplace(2, CreateShaderProgram(
             "shaders/PrimitiveInstanceWorld.vert",
-            "shaders/PrimitiveTexture.frag"
-        );
+            "shaders/PrimitiveTexture.frag",
+            {Uniform::View, Uniform::Texture0}
+        ));
+
+        shaderPrograms.emplace(3, CreateShaderProgram(
+            "shaders/PrimitiveInstanceUI.vert",
+            "shaders/PrimitiveTexture.frag",
+            {Uniform::Screen, Uniform::Texture0}
+        ));
 
 
-        renderTargets[0].shaderProgram = SPprimitiveWorld;
-        renderTargets[5].shaderProgram = SPprimitiveSprite;
-        renderTargets[10].shaderProgram = SPprimitiveUI;
+        renderTargets[0].program = &shaderPrograms[0];
+        renderTargets[10].program = &shaderPrograms[1];
+        renderTargets[5].program = &shaderPrograms[2];
+        renderTargets[15].program = &shaderPrograms[3];
     }
 
      void Renderer::UploadUniforms(ShaderProgram& shader, const Camera& cam, const Screen& screen)
@@ -166,7 +178,15 @@ namespace LGDL
         {
             RenderTarget& t = renderTargets[target];
 
-            UploadUniforms(t.program, cam, screen);
+            if(t.program == nullptr)
+            {
+                std::cout << "Render target "
+                        << target
+                        << " has no shader program!\n";
+                continue;
+            }
+
+            UploadUniforms(*t.program, cam, screen);
         }
     }
 
@@ -187,7 +207,7 @@ namespace LGDL
         {
             RenderTarget& t = renderTargets[target];
 
-            glUseProgram(t.shaderProgram); // set shader per target
+            glUseProgram(t.program->ID); // set shader per target
 
             if(t.geometryBatch.vertices.size() != 0)
             {
@@ -195,7 +215,7 @@ namespace LGDL
             }
             if(t.instanceBatch.instances.size() != 0)
             {
-                DrawInstanceBatch(t.instanceBatch);
+                DrawInstanceBatch(t.instanceBatch, *t.program);
             }
             
 
@@ -353,7 +373,7 @@ namespace LGDL
         );
     }
 
-    void Renderer::DrawInstanceBatch(const InstanceBatch& batch)
+    void Renderer::DrawInstanceBatch(const InstanceBatch& batch, const ShaderProgram& shader)
     {
         //glUseProgram(SPprimitiveSprite); // this is also now going to assume the shader program is already set
             //despite this being potentially dangerous, it means less passing variables lol
@@ -363,17 +383,20 @@ namespace LGDL
         glBindVertexArray(batch.mesh.VAO);
         glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
 
-        glUniform1i(
-            glGetUniformLocation(SPprimitiveSprite, "uTexture"),
-            0 // why is this 0?
-        );
-
+        if(shader.HasUniform(Uniform::Texture0))
+        {
+            glUniform1i(
+                shader.GetUniformLocation(Uniform::Texture0),
+                0
+            );
+        }
         glActiveTexture(GL_TEXTURE0);
 
         glBindTexture(
             GL_TEXTURE_2D,
             batch.texture.ID
         );
+        
 
         glBufferSubData(
             GL_ARRAY_BUFFER,

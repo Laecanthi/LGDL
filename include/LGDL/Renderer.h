@@ -3,7 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <variant>
-#include <deque>
+//#include <deque>
 
 #include <LGDL/Mesh.h>
 #include <LGDL/Types.h>
@@ -21,27 +21,6 @@ namespace LGDL
     {
         int target;
         int layer;
-    };
-
-    struct RenderTarget
-    {
-        std::vector<RenderCommand> commands; // RenderCommand is an std::varient
-            // can be either a DrawCommand (goes into geometryBatch)
-                // draw commands must be flattened before going into the batch
-            // or InstanceData (goes into instanceBatch)
-                // instance data can go directly into the batch
-
-        // note: I could probably make the batches also a varient, because of how shaders get assigned there can't be both anyways
-            // for now, they will stay seperate. However; things will break if attempting to use both batch types in the same target
-            // because of that, it probably wouldn't be a bad idea to clarify what type of batch each RenderTarget uses
-
-        GeometryBatch geometryBatch;
-            // requires a VBO, VAO, and a list of Vertex (vertices)
-
-        InstanceBatch instanceBatch;
-            // requires a Mesh (mesh), Texture (texture), and list of InstanceData (instances)
-
-        ShaderProgram* program = nullptr;
     };
 
     enum class Uniform
@@ -64,7 +43,7 @@ namespace LGDL
                 return "uScreen";
 
             case Uniform::Texture0:
-                return "uTexture";
+                return "uTexture0";
         }
 
         return "";
@@ -75,11 +54,11 @@ namespace LGDL
     {
         GLuint ID;
 
-        std::unordered_map<Uniform, GLint> uniformLocations;
+        std::unordered_map<Uniform, GLuint> uniformLocations;
 
-        std::vector<Uniform> uniforms; // this can just be a list, order doesn't actually matter
+        std::vector<Uniform> uniforms; // this can just be a list, order doesn't actually matter since this is just for initialization
 
-        GLint GetUniformLocation(Uniform u) const
+        GLuint GetUniformLocation(Uniform u) const
         {
             return uniformLocations.at(u);
         }
@@ -88,6 +67,28 @@ namespace LGDL
         {
             return uniformLocations.contains(u);
         }
+    };
+
+    struct RenderTarget
+    {
+        std::vector<RenderCommand> commands; // RenderCommand is an std::varient
+            // can be either a DrawCommand (goes into geometryBatch)
+                // draw commands must be flattened before going into the batch
+            // or InstanceData (goes into instanceBatch)
+                // instance data can go directly into the batch
+
+        // note: I could probably make the batches also a varient, because of how shaders get assigned there can't be both anyways
+            // for now, they will stay seperate. However; things will break if attempting to use both batch types in the same target
+            // because of that, it probably wouldn't be a bad idea to clarify what type of batch each RenderTarget uses
+
+        GeometryBatch geometryBatch;
+            // requires a VBO, VAO, and a list of Vertex (vertices)
+
+        InstanceBatch instanceBatch;
+            // requires a Mesh (mesh), Texture (texture), and list of InstanceData (instances)
+
+        ShaderProgram* program = nullptr; // points to the address of the shader program, does not own program
+            // render target should never edit program, only read from it
     };
 
 
@@ -103,7 +104,7 @@ namespace LGDL
         void UploadUniforms(ShaderProgram& shader, const Camera& cam, const Screen& screen);
         void BeginFrame(const Camera& cam, const Screen& screen);
         void Flush();
-        void DrawInstanceBatch(const InstanceBatch& batch);
+        void DrawInstanceBatch(const InstanceBatch& batch, const ShaderProgram& shader);
         void DrawGeometryBatch(const GeometryBatch& batch);
         void SetState(int target, int layer);
         void SortCommands();
@@ -137,7 +138,7 @@ namespace LGDL
         //void DrawVector(const Vec2& position, const float angle, const float mag, const float& thickness, const Color& color);
 
         std::unordered_map<int, RenderTarget> renderTargets;
-        std::deque<ShaderProgram> shaderPrograms;
+        std::unordered_map<int, ShaderProgram> shaderPrograms;
 
     private:
 

@@ -3,13 +3,13 @@
 in vec4 vColor;
 in vec2 vUV;
 
-uniform sampler2D uTexture;
+uniform sampler2D uTexture0;
 
 out vec4 FragColor;
 
 void main()
 {
-    vec4 texColor = texture(uTexture, vUV);
+    vec4 texColor = texture(uTexture0, vUV);
 
     FragColor = vec4(vColor.xyz, texColor.w);
 
