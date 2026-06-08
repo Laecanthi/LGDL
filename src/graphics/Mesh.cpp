@@ -59,8 +59,18 @@ namespace LGDL
 
     void ApplyTransform(VertexMesh& mesh, const Transform& transform)
     {
-        float s = sin(transform.rotation);
-        float c = cos(transform.rotation);
+        bool rotate = std::abs(transform.rotation) > 0.0001f; // does not perform rotation calculations if no rotation
+
+        float s = 0;
+        float c = 1;
+
+
+        if(rotate)
+        {
+            s = sin(transform.rotation);
+            c = cos(transform.rotation);
+        }
+            
 
         for(int i = 0; i < mesh.vertices.size(); i++)
         {
@@ -68,7 +78,14 @@ namespace LGDL
 
             v.pos = v.pos * transform.scale;
 
-            v.pos = {v.pos.x * c - v.pos.y * s, v.pos.x * s + v.pos.y * c};
+            if(rotate)
+            {
+                v.pos =
+                {
+                    v.pos.x * c - v.pos.y * s,
+                    v.pos.x * s + v.pos.y * c
+                };
+            }
 
             v.pos += transform.position;
         }
