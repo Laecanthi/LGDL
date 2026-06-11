@@ -161,6 +161,11 @@ namespace LGDL
         return r;
     }
 
+    Vec2 operator/(Vec2 v, float s)
+    {
+        return { v.x / s, v.y / s };
+    }
+
     float VMag(const Vec2& v)
     {
         return hypot(v.x, v.y);
@@ -174,5 +179,12 @@ namespace LGDL
     Vec2 Polar(float angle, float mag)
     {
         return {cos(angle) * mag, sin(angle) * mag};
+    }
+
+    float DistanceSquared(Vec2 a, Vec2 b)
+    {
+        float dx = a.x - b.x;
+        float dy = a.y - b.y;
+        return dx * dx + dy * dy;
     }
 }

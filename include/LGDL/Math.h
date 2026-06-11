@@ -49,11 +49,14 @@ namespace LGDL
 
     Vec2 operator*(const Vec2& v, float s);
     Vec2 operator*(const Vec2& a, const Vec2& b);
+    Vec2 operator/(Vec2 v, float s);
 
     float VMag(const Vec2& v);
 
     float VDir(const Vec2& v);
 
     Vec2 Polar(float angle, float mag);
+
+    float DistanceSquared(Vec2 a, Vec2 b);
 }
 
