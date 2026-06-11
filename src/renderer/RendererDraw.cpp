@@ -245,6 +245,19 @@ namespace LGDL
                 << glyph.size.x << ", "
                 << glyph.size.y << "\n";*/
         }
+        #if LGDL_GL_DEBUG
+        // scan instance data for non-finite values before uploading
+        if (!renderTargets[drawState.target].instanceBatch.instances.empty()) {
+            const float* fptr = reinterpret_cast<const float*>(renderTargets[drawState.target].instanceBatch.instances.data());
+            size_t count = (renderTargets[drawState.target].instanceBatch.instances.size() * sizeof(InstanceData)) / sizeof(float);
+            for (size_t i = 0; i < count; ++i) {
+                if (!std::isfinite(fptr[i])) {
+                    std::cerr << "[GL DEBUG] non-finite in InstanceData at float index " << i << "\n";
+                    break;
+                }
+            }
+        }
+        #endif
     }
 
 }

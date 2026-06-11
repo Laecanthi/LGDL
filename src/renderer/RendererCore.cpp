@@ -3,6 +3,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <algorithm>
+#include <cmath>
 #include <variant>
 #include <unordered_map>
 
@@ -10,6 +11,18 @@
 #include <LGDL/Shader.h>
 #include <LGDL/Math.h>
 #include <LGDL/Texture.h>
+
+#ifndef LGDL_GL_DEBUG
+#define LGDL_GL_DEBUG 1
+#endif
+
+#if LGDL_GL_DEBUG
+static void GLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+    (void)source; (void)type; (void)id; (void)severity; (void)length; (void)userParam;
+    std::cerr << "[GL DEBUG] " << message << " (id=" << id << ", severity=" << severity << ")\n";
+}
+#endif
 
 namespace LGDL
 {
@@ -28,6 +41,17 @@ namespace LGDL
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_MULTISAMPLE);
+        
+#if LGDL_GL_DEBUG
+    #if defined(GL_DEBUG_OUTPUT)
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(GLDebugCallback, nullptr);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+    #else
+        std::cerr << "[GL DEBUG] KHR_debug not available\n";
+    #endif
+#endif
 
         int MAX_INSTANCES = 5000; // arbitrary max instances being 5k.
         int MAX_VERTICES = 50000; // arbitraryt max vertices being 50k.
@@ -223,6 +247,18 @@ namespace LGDL
             t.commands.clear(); // clear commands
             t.instanceBatch.instances.clear(); // clears instances
 
+#if LGDL_GL_DEBUG
+            GLenum err;
+            while((err = glGetError()) != GL_NO_ERROR) {
+                std::cerr << "[GL ERROR] " << err << " after drawing target " << target << "\n";
+            }
+
+            GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+            if (status != GL_FRAMEBUFFER_COMPLETE) {
+                std::cerr << "[GL FBO STATUS] " << status << " on target " << target << "\n";
+            }
+#endif
+
             //std::cout << t.commands.size() << ", " << t.geometryBatch.vertices.size() << "\n";
         }
 
@@ -398,6 +434,20 @@ namespace LGDL
         );
         
 
+        
+#if LGDL_GL_DEBUG
+        if (!batch.instances.empty()) {
+            const float* fptr = reinterpret_cast<const float*>(batch.instances.data());
+            size_t count = (batch.instances.size() * sizeof(InstanceData)) / sizeof(float);
+            for (size_t i = 0; i < count; ++i) {
+                if (!std::isfinite(fptr[i])) {
+                    std::cerr << "[GL DEBUG] non-finite in InstanceData at float index " << i << "\n";
+                    break;
+                }
+            }
+        }
+#endif
+
         glBufferSubData(
             GL_ARRAY_BUFFER,
             0,
@@ -417,6 +467,20 @@ namespace LGDL
     {
         glBindVertexArray(batch.VAO);
         glBindBuffer(GL_ARRAY_BUFFER, batch.VBO);
+
+        
+#if LGDL_GL_DEBUG
+        if (!batch.vertices.empty()) {
+            const float* fptr = reinterpret_cast<const float*>(batch.vertices.data());
+            size_t count = (batch.vertices.size() * sizeof(Vertex)) / sizeof(float);
+            for (size_t i = 0; i < count; ++i) {
+                if (!std::isfinite(fptr[i])) {
+                    std::cerr << "[GL DEBUG] non-finite in Vertex at float index " << i << "\n";
+                    break;
+                }
+            }
+        }
+#endif
 
         glBufferData(
             GL_ARRAY_BUFFER,
