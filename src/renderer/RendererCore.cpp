@@ -13,7 +13,7 @@
 #include <LGDL/Texture.h>
 
 #ifndef LGDL_GL_DEBUG
-#define LGDL_GL_DEBUG 1
+#define LGDL_GL_DEBUG 0
 #endif
 
 #if LGDL_GL_DEBUG
