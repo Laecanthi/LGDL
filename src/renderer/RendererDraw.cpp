@@ -260,4 +260,74 @@ namespace LGDL
         #endif
     }
 
+    void Renderer::Write(const std::string& text, Vec2 pos, float size, Font& font, const Color& color, const int anchor)
+    {
+        float width = 0;
+        float height = 0;
+
+        for(char c : text)
+        {
+            Glyph glyph = font.glyphs[static_cast<int>(c)];
+
+            width += glyph.advance / font.defaultFontSize * size;
+            //height = std::max(height, glyph.size.y);
+        }
+
+        height = size;
+
+        // anchors:
+
+        /*
+            13 23 33
+            12 22 32
+            11 21 31
+        */
+
+        Vec2 offset = {0,0};
+
+        switch(anchor)
+        {
+            case(11): // bottom left (default)
+                //none
+                break;
+            case(12): // middle left
+                offset.y = -height / 2.0f;
+                break;
+            case(13): // top left
+                offset.y = -height;
+                break;
+
+            case(21): // bottom middle
+                offset.x = -width / 2.0f;
+                break;
+            case(22): // middle middle
+                offset.x = -width / 2.0f;
+                offset.y = -height / 2.0f;
+                break;
+            case(23): // top midde
+                offset.x = -width / 2.0f;
+                offset.y = -height;
+                break;
+
+            case(31): // bottom right
+                offset.x = -width;
+                break;
+            case(32): // middle right
+                offset.x = -width;
+                offset.y = -height / 2.0f;
+                break;
+            case(33): // top right
+                offset.x = -width;
+                offset.y = -height;
+                break;
+
+            default: // bottom left
+                break;
+        }
+
+        //std::cout << offset.x << ", " << offset.y << "\n";
+
+        Write(text, pos + offset, size, font, color);
+    }
+
 }
