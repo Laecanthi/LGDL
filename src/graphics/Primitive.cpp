@@ -28,7 +28,7 @@ namespace LGDL
         {
             AppendMesh(
                 arc,
-                CreateTriangle({0,0}, {cos(angle * i + startAngle), sin(angle * i + startAngle)}, {cos(angle * (i+1) + startAngle), sin(angle * (i+1) + startAngle)})
+                CreateTriangle({0,0}, {cosf(angle * i + startAngle), sinf(angle * i + startAngle)}, {cosf(angle * (i+1) + startAngle), sinf(angle * (i+1) + startAngle)})
             );
         }
 
@@ -46,8 +46,8 @@ namespace LGDL
 
         for(int i = 0; i < res; i++)
         {
-            Vec2 thisPoint = {cos(angle * i + startAngle), sin(angle * i + startAngle)};
-            Vec2 nextPoint = {cos(angle * (i+1) + startAngle), sin(angle * (i+1) + startAngle)};
+            Vec2 thisPoint = {cosf(angle * i + startAngle), sinf(angle * i + startAngle)};
+            Vec2 nextPoint = {cosf(angle * (i+1) + startAngle), sinf(angle * (i+1) + startAngle)};
 
             AppendMesh(
                 arc,
@@ -70,7 +70,7 @@ namespace LGDL
         {
             AppendMesh(
                 circle,
-                CreateTriangle({0,0}, {cos(angle * i), sin(angle * i)}, {cos(angle * (i+1)), sin(angle * (i+1))})
+                CreateTriangle({0,0}, {cosf(angle * i), sinf(angle * i)}, {cosf(angle * (i+1)), sinf(angle * (i+1))})
             );
         }
 
